@@ -1,0 +1,48 @@
+package com.company;
+
+import java.util.Date;
+
+public class ProjectObject {
+    private int projectID;
+    private Date dateFrom;
+    private Date dateTo;
+
+    public ProjectObject(int projectID, Date dateFrom, Date dateTo) {
+        this.projectID = projectID;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+    }
+
+    public int getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(int projectID) {
+        this.projectID = projectID;
+    }
+
+    public Date getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "projectID=" + projectID +
+                ", dateFrom=" + dateFrom +
+                ", dateTo=" + dateTo +
+                '}';
+    }
+}
