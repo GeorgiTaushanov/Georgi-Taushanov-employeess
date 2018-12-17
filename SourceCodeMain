@@ -1,0 +1,112 @@
+package com.company;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+public class Main {
+
+    public static HashMap<Integer,List<ProjectObject>> readFromFileAndSaveData(){
+        BufferedReader reader = null;
+        String line = "";
+        HashMap<Integer,List<ProjectObject>> map = new HashMap<>();
+        String[] arrSplit = new String[4];
+        SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");
+        List<ProjectObject> list = new ArrayList<>();
+
+       int empID = 0;
+       int projectID = 0;
+       Date dateFrom;
+       Date dateTo;
+
+        try {
+            reader = new BufferedReader(new FileReader("D:\\InputData.txt"));
+            while ((line = reader.readLine()) != null) {
+                arrSplit = line.split(", ");              //read the file
+
+                empID = Integer.parseInt(arrSplit[0]);
+                projectID = Integer.parseInt(arrSplit[1]);       // save data in current variables
+                dateFrom = format.parse(arrSplit[2]);
+
+                if(arrSplit[3].equals("NULL")){
+                    dateTo = new Date();                 //special case
+                }
+                else {
+                    dateTo = format.parse(arrSplit[3]);
+                }
+
+                ProjectObject p = new ProjectObject(projectID,dateFrom,dateTo);
+
+               if(!map.containsKey(empID)){
+                   list = new ArrayList<>();          // if the map not already contain the key
+                   list.add(p);
+                   map.put(empID,list);
+               }else{
+                   map.get(empID).add(p);             // when already contain
+               }
+            }
+
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){               //catch exceptions if it be thrown somewhere in the code
+            e.printStackTrace();
+        }catch (java.text.ParseException e){
+            e.printStackTrace();
+        }
+
+        finally {
+            try {
+                if (reader != null)reader.close();       // must be sure that the file will be closed
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return map;
+    }
+
+    public static void calculatingAndShow(HashMap<Integer,List<ProjectObject>> map){
+        int firstEmpNumber = 0;
+        int secondEmpNumber = 0;
+        long maxDays = 0;
+        long sum = 0;
+
+        for (Map.Entry<Integer,List<ProjectObject>> o1: map.entrySet() )
+        {
+            for (Map.Entry<Integer,List<ProjectObject>> o2: map.entrySet() )
+            {
+                if(o1.getKey() != o2.getKey()){
+                    for (ProjectObject p1:o1.getValue()) {
+                        for (ProjectObject p2:o2.getValue()) {
+                            if(p1.getProjectID() == p2.getProjectID()){
+                                long min = Math.min(p1.getDateTo().getTime() - p1.getDateFrom().getTime()
+                                        ,p2.getDateTo().getTime() - p2.getDateFrom().getTime());
+
+                                sum+= min;
+
+                                if(sum > maxDays){                  //checking
+                                    maxDays = sum;                  //calculating
+                                    firstEmpNumber = o1.getKey();   //and returning
+                                    secondEmpNumber = o2.getKey();  //the biggest result
+                                    sum = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Employee with id -> "
+                + firstEmpNumber + " and "
+                + "Employee with id -> "              // show the result after calculating
+                +  secondEmpNumber);
+    }
+
+    public static void main(String[] args) {
+        HashMap<Integer,List<ProjectObject>> maps = new HashMap<>();
+        maps = readFromFileAndSaveData();                               //test the program
+        calculatingAndShow(maps);
+    }
+}
